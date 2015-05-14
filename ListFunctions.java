@@ -1,4 +1,4 @@
-package quoteGen;
+package QuoteGen;
 
 public class ListFunctions {
 	
