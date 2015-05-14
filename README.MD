@@ -1,2 +1,2 @@
 
-Only Generates the Best quotes in town
+Only Generates the Best quotes in the world
