@@ -20,9 +20,9 @@ public class clauseGenerator {
 		int verbType = (int) (Math.random() * 3);
 
 		if (Math.random() < .6)
-			clause += getRandomString(PartsOfSpeech.negations) + " ";
+			clause += getRandomString(PartsOfSpeech.adverbs) + " ";
 
-		clause += getRandomString(PartsOfSpeech.Verbs[verbType]) + "";
+		clause += getRandomString(PartsOfSpeech.verbs[verbType]) + "";
 
 		if (verbType == PartsOfSpeech.Prepositional) {
 			return clause + " that " + getPrepositionalPhrase() + ", "
