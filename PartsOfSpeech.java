@@ -8,19 +8,19 @@ public class PartsOfSpeech {
 	
 	public static final int Prepositional = 2;
 
-	public static String[][] Verbs = {{"Believe", "Control", "Are", "Climb", "Run", "Take", "Leave", "Have"}, 	//Direct object verbs
+	public static String[][] verbs = {{"Believe", "Control", "Are", "Climb", "Run", "Take", "Leave", "Have"}, 	//Transitive verbs
 
-			{"Run", "Fly", "Walk", "Climb", "Leave"},					//Standalone verbs
+			{"Run", "Fly", "Walk", "Climb", "Leave"},					//Intransitive verbs
 
 			{"Say", "Think", "Believe", "Hate", "Realize", "Deny"}};			//Prepositional verbs
 
-	public static String[][] nouns = {{"You", "People", "They", "Hearts", "Brothers", "Family", "Sisters"}};
+	public static String[][] nouns = {{"You", "People", "They", "Some", "Souls", "Hearts", "Friends", "Brothers", "Sisters"}};
 
-	public static String[] negations = {"Never", "Always", "Sometimes"};
+	public static String[] adverbs = {"Never", "Always", "Sometimes"};
 
-	public static String[] prepositions = {"In", "On", "Outside of", "Inside of", "Around", "Beside", "Towards", "Away from", "Without", "With", "Above"};
+	public static String[] prepositions = {"In", "On", "Outside of", "Inside of", "Besides", "Towards", "Away from", "Without", "With", "Above", "Below", "Out of"};
 
-	public static String[] places = {"The heart", "Hope", "Love", "Life", "Happiness", "Friendship"};
+	public static String[] places = {"Fear", "Hope", "The heart", "The soul", "Life", "Happiness", "Joy", "Love", "Friendship", };
 	
 	public static String[] conjunctions = {"And", "Or", "But"};
 
