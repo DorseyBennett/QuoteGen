@@ -1,3 +1,5 @@
+package QuoteGen;
+
 public class clauseGenerator {
 
 	public static String getRandomString(String[] list) {
