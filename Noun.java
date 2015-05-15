@@ -6,7 +6,6 @@ public class Noun extends Word{
 	
 	public Noun(String singular, String plural){
 		
-		super(singular);
 		this.singular=singular;
 		this.plural=plural;
 	}
