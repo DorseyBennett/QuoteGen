@@ -9,7 +9,7 @@ public class Adverb extends Word{
 	public String getPartOfSpeech() {
 		return "Adverb";
 	}
-	public String getWord(int type){
+	public String getWord(){
 		return word;
 	}
 }

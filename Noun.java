@@ -23,5 +23,8 @@ public Noun(String singular){
 	{
 		return (type==1) ? plural : singular;
 	}
+	public String getWord(){
+		return singular;
+	}
 	
 }
