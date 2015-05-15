@@ -87,4 +87,5 @@ public class clauseGenerator {
 }
 // Outside of hope, people sometimes walk but brothers sometimes run beside
 // friendship.
-
+// actually a kind of good one : "family are the joy and the soul inside the heart"
+// only problem is that grammar;
