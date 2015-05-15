@@ -1,3 +1,5 @@
+package QuoteGen;
+
 public abstract class Word {
 
 	protected String word;
