@@ -16,12 +16,12 @@ public Noun(String singular){
 	}
 	
 	
-	public String getPartOfSpeech() {
-		return "noun";
+	public int getPartOfSpeech() {
+		return Word.noun;
 	}
-	public String getWord(int type)
+	public String getWord(boolean isPlural)
 	{
-		return (type==1) ? plural : singular;
+		return isPlural ? plural : singular;
 	}
 	public String getWord(){
 		return singular;
