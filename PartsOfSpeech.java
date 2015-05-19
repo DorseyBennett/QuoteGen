@@ -12,7 +12,7 @@ public class PartsOfSpeech {
 
 			{"Run", "Fly", "Walk", "Climb", "Leave"},					//Intransitive verbs
 
-			{"Say", "Think", "Believe", "Hate", "Realize", "Deny"}};			//Prepositional verbs
+			{"Say", "Think", "Believe", "h8", "Realize", "Deny"}};			//Prepositional verbs
 
 	public static String[][] nouns = {{"You", "People", "They", "Some", "Souls", "Hearts", "Friends", "Brothers", "Sisters"}};
 
@@ -22,7 +22,8 @@ public class PartsOfSpeech {
 
 	public static String[] places = {"Fear", "Hope", "The heart", "The soul", "Life", "Happiness", "Joy", "Love", "Friendship", };
 	
-	public static String[] conjunctions = {"And", "Or", "But"};
+	public static String[] conjunctions = {"And", "Or", "But", "Yet"};
 
+	//You always h8 that out of life, friends always climb or people sometimes leave without the soul besides love.
 
 }

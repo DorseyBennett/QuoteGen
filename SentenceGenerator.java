@@ -6,10 +6,111 @@ package QuoteGen;
 import java.util.ArrayList;
 /** Class used to generate sentences, only used statically */
 public class SentenceGenerator {
-	
+	/** flags to denote whether article and whether plural
+	 * 0x1 = can be plural w article (the people are vs the happinesses are/ the they are), 
+	 * 0x1<<1 can be sing w article (the heart is vs the happiness is)
+	 * 0x1<<2 can be plural w/o article (people are vs happinesses are)
+	 * 0x1<<3 can be sing w/o article (hope is vs person is)
+	 */
+	public static final int pluralArticle = 0x1, singularArticle = 0x1<<1, pluralNoArticle = 0x1 << 2, singularNoArticle = 0x1 << 3;	
 	private static ArrayList<Word> listOfWords;
+	/**
+	 * Populates listOfWords with statically initialized words
+	 */
 	public static void setupListOfWords() {
+		String[][] nouns = {{"person", "people"},
+				{"soul", "souls"}, {"heart", "hearts"}, 
+				{"friend", "friends"}, {"brother", "brothers"}, 
+				{"sister", "sisters"} };//nx2
+		int[] flags = { pluralArticle | singularArticle | pluralNoArticle, 
+				pluralArticle | singularArticle | pluralNoArticle | singularNoArticle, pluralArticle | singularArticle | pluralNoArticle,
+				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
+				pluralArticle | singularArticle | pluralNoArticle,
+		};
+		
+		String[][] adjectives = {{"Shiny"}, {"Beautiful"}, {"Happy"}, 
+				{"Hopeful"}, {"Rare"}, {"Determined"}, 
+				{"Blessed"}, {"Important"}, {"Inspirational"},
+				{"Inspirational"}, {"Smart"}, {"Lonely"}, {"Sparkly"}};
+		String[][] adverbs = {{"Never"}, {"Always"}, {"Sometimes"}};
+		String[][] prepositions = {{"In"}, {"On"}, {"Outside of"}, {"Inside of"},
+				{"Besides"}, {"Towards"}, {"Away from"}, {"Without"}, {"With"}, {"Above"},
+				{"Below"}, {"Out of"}};
+		String[][] transVerbs = {{"Believe", "believes", "believed", "believed"}, 
+				{"Control", "controls", "controlled", "controlled" },
+				{"Are", "is", "were", "was"},
+				{"Climb", "climbs", "climbed", "climbed"}, 
+				{"run", "runs", "ran", "ran"},
+				{"Take", "takes", "took", "took"}, 
+				{"Leave", "leaves", "left", "left"},
+				{"Have", "has", "had", "had"}};//nx4
+		String[][] intransVerbs = {{}};//nx4
+		String[][] prepVerbs = {{"go", "goes", "went", "went"}};//nx4
+		String[][] articles = {{"the"}, {"a"}, {"some"}};//nx4
+
 		listOfWords = new ArrayList<Word>();
+		addWordsOfType(nouns, flags, Word.noun, 0);
+		addWordsOfType(adjectives, flags, Word.adjective, 0);
+		addWordsOfType(adverbs, flags, Word.adverb, 0);
+		addWordsOfType(prepositions, flags, Word.preposition, 0);
+//		addWordsOfType(transVerbs, flags, Word.verb, Verb.transitive);
+		addWordsOfType(articles, flags, Word.article, 0);
+
+//		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
+		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
+
+	}
+	/**
+	 * Adds given strings to listOfWords
+	 * @param words Nx4 array of strings, words[i][0] = sing. present, 
+	 * words[i][1] = plural present, words[i][2] = sing past, words[i][3] = plural past
+	 * @param flags Only used with noun, array of flags representing behavior with articles
+	 * @param type Type of word (see Word)
+	 * @param verbType Type of verb (see Verb)
+	 */
+	private static void addWordsOfType (String[][] words, int[] flags, int type, int verbType) {
+		for (int i = 0; i<words.length; i++) {
+			String[] e = words[i];
+			switch (type) {
+			case Word.noun:
+				listOfWords.add(new Noun(e[0], e[1], flags[i]));
+				break;
+			case Word.adjective:
+				listOfWords.add(new Adjective(e[0]));
+				break;
+			case Word.adverb:
+				listOfWords.add(new Adverb(e[0]));
+				break;
+			case Word.preposition:
+				listOfWords.add(new Preposition(e[0]));
+				break;
+			case Word.interjection:
+				listOfWords.add(new Interjection(e[0]));
+				break;
+			case Word.article:
+				listOfWords.add(new Article(e[0]));
+				break;
+			case Word.verb:
+				switch (verbType) {
+				case Verb.transitive:
+					listOfWords.add(new TransitiveVerb(e[1], e[0], e[3], e[2]));
+					break;
+				case Verb.prepositional:
+					listOfWords.add(new PrepositionalVerb(e[1], e[0], e[3], e[2]));
+					break;
+				case Verb.intransitive:
+					listOfWords.add(new IntransitiveVerb(e[1], e[0], e[3], e[2]));
+					break;
+
+				default:
+					break;
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 	/**
 	 * Generates inspirational sentences, currently only simple (1 independent clause)
@@ -82,12 +183,13 @@ public class SentenceGenerator {
 			lastWord = sentence.get(sentence.size()-1);
 		}
 		Noun noun = (Noun) getWordOfType(Word.noun, lastWord);
-		if (noun.isUsedWithArticle()) {
+		boolean plural = noun.isPlural();
+		if (noun.isUsedWithArticle(plural)) {
 			sentence.add(getWordOfType(Word.article));
 		}
 		sentence.add(getWordOfType(Word.adjective, noun));
 		sentence.add(noun);
-		return Math.random()>0.5;//needs to be fixed for words like "happiness"
+		return plural;//needs to be fixed for words like "happiness"
 	}
 	/**
 	 * Alias of getWordOfType that does not require related word (defaults to null)
