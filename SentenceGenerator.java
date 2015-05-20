@@ -21,11 +21,11 @@ public class SentenceGenerator {
 		String[][] nouns = {{"person", "people"},
 				{"soul", "souls"}, {"heart", "hearts"}, 
 				{"friend", "friends"}, {"brother", "brothers"}, 
-				{"sister", "sisters"} };//nx2
+				{"sister", "sisters"}, {"hope", "hope"}};//nx2
 		int[] flags = { pluralArticle | singularArticle | pluralNoArticle, 
-				pluralArticle | singularArticle | pluralNoArticle | singularNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
-				pluralArticle | singularArticle | pluralNoArticle,
+				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
+				pluralArticle | singularArticle | pluralNoArticle, singularNoArticle, 
 		};
 		
 		String[][] adjectives = {{"Shiny"}, {"Beautiful"}, {"Happy"}, 
@@ -40,22 +40,25 @@ public class SentenceGenerator {
 				{"Control", "controls", "controlled", "controlled" },
 				{"Are", "is", "were", "was"},
 				{"Climb", "climbs", "climbed", "climbed"}, 
-				{"run", "runs", "ran", "ran"},
+				
 				{"Take", "takes", "took", "took"}, 
 				{"Leave", "leaves", "left", "left"},
 				{"Have", "has", "had", "had"}};//nx4
 		String[][] intransVerbs = {{}};//nx4
-		String[][] prepVerbs = {{"go", "goes", "went", "went"}};//nx4
-		String[][] articles = {{"the"}, {"a"}, {"some"}};//nx4
+		String[][] prepVerbs = {{"go", "goes", "went", "went"},
+				{"fly", "flies","flew", "flew"}, 
+				{"run", "runs", "ran", "ran"},
+				{"walk", "walks", "walked", "walked"}};
+				;//nx4
+		String[][] articles = {{"the", "the"}, {"a", "some"}};//nx4
 
 		listOfWords = new ArrayList<Word>();
 		addWordsOfType(nouns, flags, Word.noun, 0);
 		addWordsOfType(adjectives, flags, Word.adjective, 0);
 		addWordsOfType(adverbs, flags, Word.adverb, 0);
 		addWordsOfType(prepositions, flags, Word.preposition, 0);
-//		addWordsOfType(transVerbs, flags, Word.verb, Verb.transitive);
+		addWordsOfType(transVerbs, flags, Word.verb, Verb.transitive);
 		addWordsOfType(articles, flags, Word.article, 0);
-
 //		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
 		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
 
@@ -88,7 +91,7 @@ public class SentenceGenerator {
 				listOfWords.add(new Interjection(e[0]));
 				break;
 			case Word.article:
-				listOfWords.add(new Article(e[0]));
+				listOfWords.add(new Article(e[0], e[1]));
 				break;
 			case Word.verb:
 				switch (verbType) {
@@ -124,8 +127,13 @@ public class SentenceGenerator {
 		//assume its present, positive for now
 		boolean present = true;
 		boolean negative = false;
+		int index = 0;
 		for (Word e : sentence) {
-			if (e.getPartOfSpeech() == Word.verb) {//verbs need special treatment
+			if (e.getWord(plural).equals("a")) {
+				char nextC = sentence.get(index+1).getWord(false).toLowerCase().charAt(0);
+				res += (nextC == 'a' || nextC == 'e' || nextC == 'i' || nextC == 'o' || nextC == 'u') ?
+						"an " : "a ";
+			} else if (e.getPartOfSpeech() == Word.verb) {//verbs need special treatment
 				if (negative) {
 					res += present ? (plural ? "do not " : "does not ") : "did not ";
 					res += e.getWord(true) + " ";
@@ -136,6 +144,7 @@ public class SentenceGenerator {
 			} else {
 				res += e.getWord(plural) + " ";
 			}
+			index++;
 		}
 		//capitalization
 		String firstChar = res.substring(0, 1);
