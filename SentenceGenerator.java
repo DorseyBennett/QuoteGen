@@ -4,6 +4,18 @@
 **/
 package QuoteGen;
 import java.util.ArrayList;
+
+import QuoteGen.words.Adjective;
+import QuoteGen.words.Adverb;
+import QuoteGen.words.Article;
+import QuoteGen.words.Interjection;
+import QuoteGen.words.Noun;
+import QuoteGen.words.Preposition;
+import QuoteGen.words.Word;
+import QuoteGen.words.verbs.IntransitiveVerb;
+import QuoteGen.words.verbs.PrepositionalVerb;
+import QuoteGen.words.verbs.TransitiveVerb;
+import QuoteGen.words.verbs.Verb;
 /** Class used to generate sentences, only used statically */
 public class SentenceGenerator {
 	/** flags to denote whether article and whether plural
@@ -21,35 +33,46 @@ public class SentenceGenerator {
 		String[][] nouns = {{"person", "people"},
 				{"soul", "souls"}, {"heart", "hearts"}, 
 				{"friend", "friends"}, {"brother", "brothers"}, 
-				{"sister", "sisters"}, {"hope", "hope"}};//nx2
+				{"sister", "sisters"}, {"hope", "hope"},
+				{"love", "love"}
+		};//nx2
 		int[] flags = { pluralArticle | singularArticle | pluralNoArticle, 
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, singularNoArticle, 
+				singularNoArticle,
 		};
 		
-		String[][] adjectives = {{"Shiny"}, {"Beautiful"}, {"Happy"}, 
+		String[][] adjectives = {{"impossible"}, {"Beautiful"}, {"Happy"}, 
 				{"Hopeful"}, {"Rare"}, {"Determined"}, 
 				{"Blessed"}, {"Important"}, {"Inspirational"},
-				{"Inspirational"}, {"Smart"}, {"Lonely"}, {"Sparkly"}};
+				{"best"}, {"lovely"}, {"Lonely"}, {"foolish"}
+				};
+				
 		String[][] adverbs = {{"Never"}, {"Always"}, {"Sometimes"}};
 		String[][] prepositions = {{"In"}, {"On"}, {"Outside of"}, {"Inside of"},
-				{"Besides"}, {"Towards"}, {"Away from"}, {"Without"}, {"With"}, {"Above"},
+				{"Beside"}, {"Towards"}, {"Away from"}, {"Without"}, {"With"}, {"Above"},
 				{"Below"}, {"Out of"}};
-		String[][] transVerbs = {{"Believe", "believes", "believed", "believed"}, 
+		String[][] transVerbs = {
+				{"Believe", "believes", "believed", "believed"}, 
 				{"Control", "controls", "controlled", "controlled" },
-				{"Are", "is", "were", "was"},
 				{"Climb", "climbs", "climbed", "climbed"}, 
-				
 				{"Take", "takes", "took", "took"}, 
 				{"Leave", "leaves", "left", "left"},
-				{"Have", "has", "had", "had"}};//nx4
-		String[][] intransVerbs = {{}};//nx4
-		String[][] prepVerbs = {{"go", "goes", "went", "went"},
+				{"Have", "has", "had", "had"}
+		};//nx4
+		String[][] intransVerbs = {
+				{"talk", "talks", "talked", "talked"}, 
+				{"think", "thinks", "thought", "thought"},
+				{"believe", "believes", "believed", "believed"},
+				{"hate", "hates", "hated", "hated"}
+		};//nx4
+		String[][] prepVerbs = {
+				{"go", "goes", "went", "went"},
 				{"fly", "flies","flew", "flew"}, 
 				{"run", "runs", "ran", "ran"},
-				{"walk", "walks", "walked", "walked"}};
-				;//nx4
+				{"walk", "walks", "walked", "walked"}
+		};//nx4
 		String[][] articles = {{"the", "the"}, {"a", "some"}};//nx4
 
 		listOfWords = new ArrayList<Word>();
@@ -59,7 +82,7 @@ public class SentenceGenerator {
 		addWordsOfType(prepositions, flags, Word.preposition, 0);
 		addWordsOfType(transVerbs, flags, Word.verb, Verb.transitive);
 		addWordsOfType(articles, flags, Word.article, 0);
-//		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
+		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
 		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
 
 	}
@@ -121,28 +144,29 @@ public class SentenceGenerator {
 	 */
 	public static String generateSentence() { 
 		ArrayList<Word> sentence = new ArrayList<Word>();
-		// only simple, present tense sentences
-		boolean plural = appendIndependentClause(sentence);
+		ArrayList<Boolean> plural = new ArrayList<Boolean>();
+
+		// only simple sentences
+		appendIndependentClause(sentence, plural);
 		String res = "";
-		//assume its present, positive for now
-		boolean present = true;
-		boolean negative = false;
+		boolean present = Math.random() > 0.5;
+		boolean negative = Math.random() > 0.5;
 		int index = 0;
 		for (Word e : sentence) {
-			if (e.getWord(plural).equals("a")) {
+			if (e.getWord(plural.get(index)).equals("a")) {
 				char nextC = sentence.get(index+1).getWord(false).toLowerCase().charAt(0);
 				res += (nextC == 'a' || nextC == 'e' || nextC == 'i' || nextC == 'o' || nextC == 'u') ?
 						"an " : "a ";
 			} else if (e.getPartOfSpeech() == Word.verb) {//verbs need special treatment
 				if (negative) {
-					res += present ? (plural ? "do not " : "does not ") : "did not ";
+					res += present ? (plural.get(index) ? "do not " : "does not ") : "did not ";
 					res += e.getWord(true) + " ";
 				} else {
 					Verb v = (Verb) e;
-					res += v.getWord(plural, present) + " ";
+					res += v.getWord(plural.get(index), present) + " ";
 				}
 			} else {
-				res += e.getWord(plural) + " ";
+				res += e.getWord(plural.get(index)) + " ";
 			}
 			index++;
 		}
@@ -160,27 +184,34 @@ public class SentenceGenerator {
 	 * @return Boolean that indicated whether the subject of the sentence is plural 
 	 * (true = plural, false = singular)
 	 */
-	private static boolean appendIndependentClause (ArrayList<Word> sentence) {
+	private static void appendIndependentClause (ArrayList<Word> sentence, ArrayList<Boolean> plural) {
 		//form = Subject Predicate (DO) (Prep phrase)
-		boolean plural = appendDescriptiveNoun(sentence);//whether plural depends on subj.
+		int initLength = sentence.size();
+		boolean plur = appendDescriptiveNoun(sentence);//whether plural depends on subj.
 		Verb predicate = (Verb) getWordOfType(Word.verb,sentence.get(sentence.size()-1));
 			//get verb related to subj.
 		sentence.add(predicate);
+		for (int i = initLength; i < sentence.size(); i++) {
+			plural.add(plur);
+		}
+		initLength = sentence.size();
 		if (predicate.isTransitive()) {//if transitive add DO
-			appendDescriptiveNoun(sentence);
+			plur = appendDescriptiveNoun(sentence);
 		}
 		if (predicate.isUsedWithPrepPhrase()) {//add prep phrase if necessary
-			appendPrepositionalPhrase(sentence);
+			plur = appendPrepositionalPhrase(sentence);
 		}
-		return plural;
+		for (int i = initLength; i < sentence.size(); i++) {
+			plural.add(plur);
+		}
 	}
 	/**
 	 * Appends prepositional phrase to end of given sentence
 	 * @param sentence ArrayList of words to append prepositional phrase to
 	 */
-	private static void appendPrepositionalPhrase (ArrayList<Word> sentence) {
+	private static boolean appendPrepositionalPhrase (ArrayList<Word> sentence) {
 		sentence.add(getWordOfType(Word.preposition));
-		appendDescriptiveNoun(sentence);
+		return appendDescriptiveNoun(sentence);
 	}
 	/**
 	 * Appends noun, article (if needed), and related adjective to end of given sentence
@@ -198,7 +229,7 @@ public class SentenceGenerator {
 		}
 		sentence.add(getWordOfType(Word.adjective, noun));
 		sentence.add(noun);
-		return plural;//needs to be fixed for words like "happiness"
+		return plural;
 	}
 	/**
 	 * Alias of getWordOfType that does not require related word (defaults to null)
