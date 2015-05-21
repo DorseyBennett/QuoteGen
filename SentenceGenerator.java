@@ -26,7 +26,7 @@ public class SentenceGenerator {
 	 * 0x1<<3 can be sing w/o article (hope is vs person is)
 	 */
 	public static final int pluralArticle = 0x1, singularArticle = 0x1<<1, pluralNoArticle = 0x1 << 2, singularNoArticle = 0x1 << 3;	
-	private static ArrayList<Word> listOfWords;
+	public static ArrayList<Word> listOfWords;
 	/**
 	 * Populates listOfWords with statically initialized words
 	 */

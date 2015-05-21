@@ -3,6 +3,7 @@ package QuoteGen;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.*;
+@SuppressWarnings("deprecation")
 
 public class tweetFunctions {
 	
@@ -23,7 +24,7 @@ public class tweetFunctions {
 		    Paging paging = new Paging(numberAgo, numberAgo);
 		    ResponseList<Status> statuses = twitter.getHomeTimeline(paging);
 
-		    String strTweets = DataObjectFactory.getRawJSON(statuses);
+			String strTweets = DataObjectFactory.getRawJSON(statuses);
 		    
 		    strTweets = strTweets.substring(strTweets.indexOf("favourites_count"));
 		    

@@ -1,7 +1,5 @@
 package QuoteGen;
 
-import java.util.concurrent.DelayQueue;
-
 public class Test {
 	
 	public static void main(String[] args) {
