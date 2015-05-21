@@ -3,7 +3,9 @@ package QuoteGen.words;
 
 public class Adverb extends Word{
 	public String word;
-	public Adverb(String word) { }
+	public Adverb(String word) { 
+		this.word = word;
+	}
 	
 	public int getPartOfSpeech() {
 		return Word.adverb;

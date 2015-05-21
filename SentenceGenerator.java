@@ -11,6 +11,7 @@ import QuoteGen.words.Article;
 import QuoteGen.words.Interjection;
 import QuoteGen.words.Noun;
 import QuoteGen.words.Preposition;
+import QuoteGen.words.SubordinateConjuction;
 import QuoteGen.words.Word;
 import QuoteGen.words.verbs.IntransitiveVerb;
 import QuoteGen.words.verbs.PrepositionalVerb;
@@ -34,13 +35,14 @@ public class SentenceGenerator {
 				{"soul", "souls"}, {"heart", "hearts"}, 
 				{"friend", "friends"}, {"brother", "brothers"}, 
 				{"sister", "sisters"}, {"hope", "hope"},
-				{"love", "love"}
+				{"love", "love"}, {"h8er", "h8ers"},
+				
 		};//nx2
 		int[] flags = { pluralArticle | singularArticle | pluralNoArticle, 
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, singularNoArticle, 
-				singularNoArticle,
+				singularNoArticle, singularArticle | pluralArticle | pluralNoArticle,
 		};
 		
 		String[][] adjectives = {{"impossible"}, {"Beautiful"}, {"Happy"}, 
@@ -65,7 +67,7 @@ public class SentenceGenerator {
 				{"talk", "talks", "talked", "talked"}, 
 				{"think", "thinks", "thought", "thought"},
 				{"believe", "believes", "believed", "believed"},
-				{"hate", "hates", "hated", "hated"}
+				{"h8", "h8s", "h8ed", "h8ed"}
 		};//nx4
 		String[][] prepVerbs = {
 				{"go", "goes", "went", "went"},
@@ -74,7 +76,13 @@ public class SentenceGenerator {
 				{"walk", "walks", "walked", "walked"}
 		};//nx4
 		String[][] articles = {{"the", "the"}, {"a", "some"}};//nx4
-
+		String[][] subordinateConjuctions = {
+				{"after"}, {"although"}, {"as"}, {"as soon as"}, {"because"}, {"before"}, 
+				{"by the time"}, {"even if"}, {"even though"}, {"every time"}, {"if"}, {"in case"}, {"in the event that"},
+				{"just in case"}, {"now that"}, {"once"}, {"only if"}, {"since"}, {"since"}, {"the first time"}, 
+				{"though"}, {"unless"}, {"until"}, {"when"}, {"whenever"}, {"whereas"}, {"whether or not"}, 
+				{"while"}
+		};
 		listOfWords = new ArrayList<Word>();
 		addWordsOfType(nouns, flags, Word.noun, 0);
 		addWordsOfType(adjectives, flags, Word.adjective, 0);
@@ -84,7 +92,7 @@ public class SentenceGenerator {
 		addWordsOfType(articles, flags, Word.article, 0);
 		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
 		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
-
+		addWordsOfType(subordinateConjuctions, flags, Word.subordinateConjuction, 0);
 	}
 	/**
 	 * Adds given strings to listOfWords
@@ -116,6 +124,9 @@ public class SentenceGenerator {
 			case Word.article:
 				listOfWords.add(new Article(e[0], e[1]));
 				break;
+			case Word.subordinateConjuction: 
+				listOfWords.add(new SubordinateConjuction(e[0]));
+				break;
 			case Word.verb:
 				switch (verbType) {
 				case Verb.transitive:
@@ -127,7 +138,6 @@ public class SentenceGenerator {
 				case Verb.intransitive:
 					listOfWords.add(new IntransitiveVerb(e[1], e[0], e[3], e[2]));
 					break;
-
 				default:
 					break;
 				}
@@ -147,10 +157,14 @@ public class SentenceGenerator {
 		ArrayList<Boolean> plural = new ArrayList<Boolean>();
 
 		// only simple sentences
-		appendIndependentClause(sentence, plural);
+		appendIndependentClause(sentence, plural, true);
 		String res = "";
-		boolean present = Math.random() > 0.5;
+		boolean present = Math.random() > 0.4;
 		boolean negative = Math.random() > 0.5;
+		for (Word e : sentence) // cannot be negative if includes adverb (they never do not climb)
+			if (e.getPartOfSpeech() == Word.adverb)
+				negative = false;
+		
 		int index = 0;
 		for (Word e : sentence) {
 			if (e.getWord(plural.get(index)).equals("a")) {
@@ -181,24 +195,41 @@ public class SentenceGenerator {
 	/**
 	 * Appends an independent clause to end of given sentence
 	 * @param sentence ArrayList of words to append independent clause to
-	 * @return Boolean that indicated whether the subject of the sentence is plural 
+	 * @param plural ArrayList of booleans that determines whether each word is plural
+	 * @param addDepClause if true has possibility of inserting dependent clause
 	 * (true = plural, false = singular)
 	 */
-	private static void appendIndependentClause (ArrayList<Word> sentence, ArrayList<Boolean> plural) {
+	private static void appendIndependentClause (ArrayList<Word> sentence, ArrayList<Boolean> plural, boolean addDepClause) {
 		//form = Subject Predicate (DO) (Prep phrase)
-		int initLength = sentence.size();
+		int initLength = plural.size();
+		int finLength = initLength;
 		boolean plur = appendDescriptiveNoun(sentence);//whether plural depends on subj.
-		Verb predicate = (Verb) getWordOfType(Word.verb,sentence.get(sentence.size()-1));
+		Verb predicate = (Verb) getWordOfType(Word.verb, sentence.get(sentence.size()-1));
 			//get verb related to subj.
-		sentence.add(predicate);
-		for (int i = initLength; i < sentence.size(); i++) {
-			plural.add(plur);
+		
+		if (!predicate.isTransitive() && !predicate.isUsedWithPrepPhrase() && addDepClause) {
+			if (Math.random() > 0.5) {
+				sentence.add(predicate);
+				finLength = sentence.size();
+				appendAdverbialClause(sentence, plural);
+			} else {
+				sentence.add(getWordOfType(Word.adverb, predicate));
+				sentence.add(predicate);
+				finLength = sentence.size();
+
+			}
+		} else {
+			sentence.add(predicate);
+			finLength = sentence.size();
 		}
-		initLength = sentence.size();
+
+		for (int i = initLength; i < finLength; i++) {
+			plural.add(initLength, plur);
+		}
+		initLength = plural.size();
 		if (predicate.isTransitive()) {//if transitive add DO
 			plur = appendDescriptiveNoun(sentence);
-		}
-		if (predicate.isUsedWithPrepPhrase()) {//add prep phrase if necessary
+		} else if (predicate.isUsedWithPrepPhrase()) {//add prep phrase if necessary
 			plur = appendPrepositionalPhrase(sentence);
 		}
 		for (int i = initLength; i < sentence.size(); i++) {
@@ -206,11 +237,34 @@ public class SentenceGenerator {
 		}
 	}
 	/**
+	 * Appends an adverbial clause to end of given sentence
+	 * @param sentence ArrayList of words to append dependent clause to
+	 * @param plural ArrayList of booleans that determines whether each word is plural
+	 * (true = plural, false = singular)
+	 */
+	private static void appendAdverbialClause (ArrayList<Word> sentence, ArrayList<Boolean> plural) {
+		Word lastWord = null;
+		if (sentence.size()>0) {//if sentence is not empty, get noun related to last word
+			lastWord = sentence.get(sentence.size()-1);
+		}
+		
+		sentence.add(getWordOfType(Word.subordinateConjuction, lastWord));
+		plural.add(false);
+		
+		appendIndependentClause(sentence, plural, false);
+	}
+	/**
 	 * Appends prepositional phrase to end of given sentence
 	 * @param sentence ArrayList of words to append prepositional phrase to
 	 */
 	private static boolean appendPrepositionalPhrase (ArrayList<Word> sentence) {
-		sentence.add(getWordOfType(Word.preposition));
+		Word lastWord = null;
+		if (sentence.size()>0) {//if sentence is not empty, get noun related to last word
+			lastWord = sentence.get(sentence.size()-1);
+		}
+		
+		sentence.add(getWordOfType(Word.preposition, lastWord));
+		
 		return appendDescriptiveNoun(sentence);
 	}
 	/**
@@ -222,20 +276,20 @@ public class SentenceGenerator {
 		if (sentence.size()>0) {//if sentence is not empty, get noun related to last word
 			lastWord = sentence.get(sentence.size()-1);
 		}
-		Noun noun = (Noun) getWordOfType(Word.noun, lastWord);
+		
+		Noun noun = (Noun) getWordOfType(Word.noun, lastWord);//gets noun related to previous thing in sentence
 		boolean plural = noun.isPlural();
+		
+		Adjective adj = (Adjective) getWordOfType(Word.adjective, noun);//gets adjective related to noun
+		
 		if (noun.isUsedWithArticle(plural)) {
-			sentence.add(getWordOfType(Word.article));
+			sentence.add(getWordOfType(Word.article, adj));//gets article related to adjective (dont say "a best")
 		}
-		sentence.add(getWordOfType(Word.adjective, noun));
+		
+		sentence.add(adj);
 		sentence.add(noun);
+		
 		return plural;
-	}
-	/**
-	 * Alias of getWordOfType that does not require related word (defaults to null)
-	 */
-	private static Word getWordOfType (int type) {
-		return getWordOfType(type, null);
 	}
 	/**
 	 * Used to get a word of a particular part of speech that is related to another
@@ -244,12 +298,12 @@ public class SentenceGenerator {
 	 * @return word of specified type similar to specified word
 	 */
 	private static Word getWordOfType (int type, Word related) {
-		//will be updated to use markov or related
-		ArrayList<Word> temp = new ArrayList<Word>();
-		for (Word e : listOfWords)
-			if (e.getPartOfSpeech() == type)
-				temp.add(e);
-		int index = (int) (Math.random() * temp.size());
-		return temp.get(index);
+		//will be updated to use Markov or related
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		for (int i = 0; i < listOfWords.size(); i++)
+			if (listOfWords.get(i).getPartOfSpeech() == type)
+				temp.add(i);
+		int index = temp.get((int)(Math.random() * temp.size()));
+		return listOfWords.remove(index);
 	}
 }
