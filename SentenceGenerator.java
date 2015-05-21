@@ -143,6 +143,7 @@ public class SentenceGenerator {
 	 * @return Formatted string containing the newly generated sentence
 	 */
 	public static String generateSentence() { 
+		setupListOfWords();
 		ArrayList<Word> sentence = new ArrayList<Word>();
 		ArrayList<Boolean> plural = new ArrayList<Boolean>();
 
