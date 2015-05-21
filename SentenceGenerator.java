@@ -162,7 +162,7 @@ public class SentenceGenerator {
 		boolean present = Math.random() > 0.4;
 		boolean negative = Math.random() > 0.5;
 		for (Word e : sentence) // cannot be negative if includes adverb (they never do not climb)
-			if (e.getPartOfSpeech() == Word.adverb)
+			if (e.getPartOfSpeech() == Word.adverb || e.getPartOfSpeech() == Word.subordinateConjuction)
 				negative = false;
 		
 		int index = 0;
