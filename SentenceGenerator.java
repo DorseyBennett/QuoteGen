@@ -66,8 +66,7 @@ public class SentenceGenerator {
 		String[][] intransVerbs = {
 				{"talk", "talks", "talked", "talked"}, 
 				{"think", "thinks", "thought", "thought"},
-				{"believe", "believes", "believed", "believed"},
-				{"h8", "h8s", "h8ed", "h8ed"}
+				{"believe", "believes", "believed", "believed"}
 		};//nx4
 		String[][] prepVerbs = {
 				{"go", "goes", "went", "went"},
