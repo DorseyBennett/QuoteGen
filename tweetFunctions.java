@@ -6,7 +6,7 @@ import twitter4j.json.*;
 @SuppressWarnings("deprecation")
 
 public class tweetFunctions {
-	
+	//dsafjadlksjfkldsajflksdjaflkjsdaklfjasdlkfjlksadjflksdjflkjsadlkfjasdlkfj
 	public static int getFavourites(int numberAgo)  {
 
 		
