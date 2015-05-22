@@ -1,1 +1,1 @@
-Only Generates the Best quotes in the world
+Only Generates The Best Quotes In The World
