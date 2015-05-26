@@ -1,1 +1,3 @@
-Only Generates The Best Quotes In The World
+Only Generates
+The Greatest Quotes In The World
+Inspirational
