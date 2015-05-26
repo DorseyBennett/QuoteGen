@@ -63,9 +63,29 @@ public class HashtagFunctions {
 			if (Math.random() < 0.25)
 				toAdd += " #climb";
 		
-		if (toGetFrom.indexOf("happ") != -1)
+		if (toGetFrom.indexOf("bless") != -1)
 			if (Math.random() < 0.25)
+				toAdd += " #blessed";
+		
+		if (toGetFrom.indexOf("beau") != -1)
+			if (Math.random() < 0.25)
+				toAdd += " #beautiful";
+		
+		if (toGetFrom.indexOf("happ") != -1)
+		{
+			if (Math.random() < 0.2)
 				toAdd += " #happiness";
+		if (Math.random() < 0.2)
+			toAdd += " #happy";
+		}
+		
+		if (toGetFrom.indexOf("foll") != -1)
+		{
+			if (Math.random()<.2)
+				toAdd += " #follow";
+			else if (Math.random()<.2)
+				toAdd += " #followme";
+		}
 		
 		if (Math.random() < 0.05)
 			toAdd += " #inspiration";
