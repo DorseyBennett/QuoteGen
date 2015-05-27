@@ -18,4 +18,7 @@ public class TransitiveVerb extends Verb{
 	public boolean isUsedWithPrepPhrase() {
 		return false;
 	}
+	public boolean isLinking() {
+		return false;
+	}
 }

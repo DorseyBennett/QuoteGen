@@ -1,12 +1,10 @@
 package QuoteGen.words.verbs;
 
-
-
-public class PrepositionalVerb extends Verb{
-	public PrepositionalVerb(String present, String past) {
+public class LinkingVerb extends Verb {
+	public LinkingVerb(String present, String past) {
 		super(present, past);
 	}
-	public PrepositionalVerb(String singularPresent, String pluralPresent, 
+	public LinkingVerb(String singularPresent, String pluralPresent, 
 			String singularPast, String pluralPast) {
 		super(singularPresent, pluralPresent, singularPast, pluralPast);
 	}
@@ -16,9 +14,9 @@ public class PrepositionalVerb extends Verb{
 	}
 	@Override
 	public boolean isUsedWithPrepPhrase() {
-		return true;
+		return false;
 	}
 	public boolean isLinking() {
-		return false;
+		return true;
 	}
 }

@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import QuoteGen.words.Adjective;
 import QuoteGen.words.Adverb;
 import QuoteGen.words.Article;
+import QuoteGen.words.CoordinatingConjunction;
 import QuoteGen.words.Interjection;
 import QuoteGen.words.Noun;
 import QuoteGen.words.Preposition;
 import QuoteGen.words.SubordinateConjuction;
 import QuoteGen.words.Word;
 import QuoteGen.words.verbs.IntransitiveVerb;
+import QuoteGen.words.verbs.LinkingVerb;
 import QuoteGen.words.verbs.PrepositionalVerb;
 import QuoteGen.words.verbs.TransitiveVerb;
 import QuoteGen.words.verbs.Verb;
@@ -31,8 +33,10 @@ public class SentenceGenerator {
 	/**
 	 * Populates listOfWords with statically initialized words
 	 */
+	//TODO: helping + linking verbs, 
 	public static void setupListOfWords() {
-		String[][] nouns = {{"person", "people"},
+		String[][] nouns = {
+				{"person", "people"},
 				{"soul", "souls"}, {"heart", "hearts"},
 				{"friend", "friends"}, {"brother", "brothers"},
 				{"sister", "sisters"}, {"hope", "hope"},
@@ -46,13 +50,14 @@ public class SentenceGenerator {
 				{"envy", "envy"}, {"pride", "pride"}
 
 		};//nx2
-		int[] flags = { pluralArticle | singularArticle | pluralNoArticle,
+		int[] flags = { 
+				pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, singularNoArticle,
 				singularNoArticle, pluralNoArticle | singularNoArticle, pluralNoArticle | singularArticle | pluralArticle,
 				singularNoArticle | pluralArticle | singularNoArticle, 
-				singularNoArticle, singularArticle,
+				singularNoArticle, singularNoArticle,
 				singularArticle | pluralNoArticle, singularNoArticle, singularArticle | pluralNoArticle, 
 				singularArticle | pluralNoArticle, singularNoArticle | pluralNoArticle,
 				singularNoArticle | singularArticle,
@@ -95,7 +100,12 @@ public class SentenceGenerator {
 				{"hate", "hates", "hated", "hated"}, 
 				{"learn", "learns", "learned", "learned"},
 		};//nx4
-
+		String[][] linkingVerbs = {
+				{"are", "is", "were", "was"},
+				{"seem", "seems", "seemed", "seemed"},
+				{"remain", "remains", "remained", "remained"},
+				{"become", "becomes", "became", "became"},
+		};//nx4
 		String[][] prepVerbs = {
 				{"go", "goes", "went", "went"},
 				{"fly", "flies","flew", "flew"},
@@ -115,6 +125,9 @@ public class SentenceGenerator {
 				{"though"}, {"unless"}, {"until"}, {"when"}, {"whenever"}, {"whereas"}, {"whether or not"}, 
 				{"while"}
 		};
+		String[][] coordinatingConjuctions = {
+				{"and"}, {"but"}, 
+		};
 		listOfWords = new ArrayList<Word>();
 		addWordsOfType(nouns, flags, Word.noun, 0);
 		addWordsOfType(adjectives, flags, Word.adjective, 0);
@@ -123,8 +136,11 @@ public class SentenceGenerator {
 		addWordsOfType(transVerbs, flags, Word.verb, Verb.transitive);
 		addWordsOfType(articles, flags, Word.article, 0);
 		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
+		addWordsOfType(linkingVerbs, flags, Word.verb, Verb.linking);
 		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
 		addWordsOfType(subordinateConjuctions, flags, Word.subordinateConjuction, 0);
+		addWordsOfType(coordinatingConjuctions, flags, Word.coordinatingConjunctions, 0);
+
 	}
 	/**
 	 * Adds given strings to listOfWords
@@ -159,6 +175,9 @@ public class SentenceGenerator {
 			case Word.subordinateConjuction: 
 				listOfWords.add(new SubordinateConjuction(e[0]));
 				break;
+			case Word.coordinatingConjunctions: 
+				listOfWords.add(new CoordinatingConjunction(e[0]));
+				break;
 			case Word.verb:
 				switch (verbType) {
 				case Verb.transitive:
@@ -169,6 +188,9 @@ public class SentenceGenerator {
 					break;
 				case Verb.intransitive:
 					listOfWords.add(new IntransitiveVerb(e[1], e[0], e[3], e[2]));
+					break;
+				case Verb.linking:
+					listOfWords.add(new LinkingVerb(e[1], e[0], e[3], e[2]));
 					break;
 				default:
 					break;
@@ -188,9 +210,16 @@ public class SentenceGenerator {
 		setupListOfWords();
 		ArrayList<Word> sentence = new ArrayList<Word>();
 		ArrayList<Boolean> plural = new ArrayList<Boolean>();
-
-		// only simple sentences
-		appendIndependentClause(sentence, plural, true);
+		if (Math.random() > 0.7) {//30% chance of making compound sentence
+			appendIndependentClause(sentence, plural, false);
+			plural.add(true);
+			sentence.add(null);
+			plural.add(true);
+			sentence.add(getWordOfType(Word.coordinatingConjunctions, null));
+			appendIndependentClause(sentence, plural, false);
+		} else {
+			appendIndependentClause(sentence, plural, true);
+		}
 		String res = "";
 		boolean present = Math.random() > 0.4;
 		boolean negative = Math.random() > 0.5;
@@ -200,6 +229,7 @@ public class SentenceGenerator {
 
 		int index = 0;
 		for (Word e : sentence) {
+			if (e != null && e.getWord(false).equals("but")) negative=!negative;
 			if (e == null) {
 				res = res.substring(0, res.length() - 1);
 				res += ", ";
@@ -209,8 +239,12 @@ public class SentenceGenerator {
 						"an " : "a ";
 			} else if (e.getPartOfSpeech() == Word.verb) {//verbs need special treatment
 				if (negative) {
+					if (e.getWord(true).equals("are")) {
+						res += present ? (plural.get(index) ? "are not " : "is not ") : (plural.get(index) ? "were not " : "was not ");
+					} else {
 					res += present ? (plural.get(index) ? "do not " : "does not ") : "would not ";
 					res += e.getWord(true) + " ";
+					}
 				} else {
 					Verb v = (Verb) e;
 					res += v.getWord(plural.get(index), present) + " ";
@@ -236,20 +270,32 @@ public class SentenceGenerator {
 	 * (true = plural, false = singular)
 	 */
 	private static void appendIndependentClause (ArrayList<Word> sentence, ArrayList<Boolean> plural, boolean addDepClause) {
-		//form = Subject Predicate (DO) (Prep phrase)
+		//form = Subject Predicate (DO) (Prep phrase) (adv or sdv clause)
 		double random  = Math.random();
 		boolean nounClauseInSubject = addDepClause && random < 0.3;
 		boolean nounClauseInObject = addDepClause && random < 0.5 && ! nounClauseInSubject;
 		addDepClause = addDepClause && random > 0.5;
+		
 		int initLength = plural.size();
 		int finLength = initLength;
+		
 		boolean plur = nounClauseInSubject ? appendNounClause(sentence, plural) : appendDescriptiveNoun(sentence);//whether plural depends on subj.
+		
+		Noun subj = null;
+		for (int i = initLength; i<sentence.size(); i++)
+			if (sentence.get(i) != null && sentence.get(i).getPartOfSpeech() == Word.noun) {
+				subj = (Noun) sentence.get(i);
+				break;
+			}
+		
 		if (nounClauseInSubject) initLength = plural.size();//if noun clause, only make things after noun clause plural
-		Verb predicate = (Verb) getWordOfType(Word.verb, sentence.get(sentence.size()-1));
+		
+		
+		Verb predicate = (Verb) getWordOfType(Word.verb, subj);
 		//get verb related to subj.
 
 
-		if (!predicate.isTransitive() && !predicate.isUsedWithPrepPhrase() && addDepClause) {
+		if (!predicate.isLinking() && !predicate.isTransitive() && !predicate.isUsedWithPrepPhrase() && addDepClause) {
 			if (Math.random() > 0.5) {
 				sentence.add(predicate);
 				finLength = sentence.size();
@@ -278,6 +324,11 @@ public class SentenceGenerator {
 		} else if (predicate.isUsedWithPrepPhrase()) {//add prep phrase if necessary
 			plur = appendPrepositionalPhrase(sentence);
 			finLength = sentence.size();
+		} else if (predicate.isLinking()) {
+			if (Math.random()>0.2) {//adjective
+				sentence.add(getWordOfType(Word.adjective, subj));
+			}
+			finLength = sentence.size();
 
 		}
 		for (int i = initLength; i < finLength; i++) {
@@ -301,6 +352,12 @@ public class SentenceGenerator {
 
 		appendIndependentClause(sentence, plural, false);
 	}
+	/**
+	 * Appends an noun clause to end of given sentence
+	 * @param sentence ArrayList of words to append dependent clause to
+	 * @param plural ArrayList of booleans that determines whether each word is plural
+	 * (true = plural, false = singular)
+	 */
 	private static boolean appendNounClause (ArrayList<Word> sentence, ArrayList<Boolean> plural) {
 		// (article) noun that verb
 		int startSize = sentence.size();

@@ -5,7 +5,7 @@ import QuoteGen.words.Word;
 public abstract class Verb extends Word {
 	protected String singularPresent, pluralPresent;
 	protected String singularPast, pluralPast;
-	public static final int transitive = 0, prepositional = 1, intransitive = 2;
+	public static final int transitive = 0, prepositional = 1, intransitive = 2, linking = 3;
 	public Verb(String singularPresent, String pluralPresent, 
 			String singularPast, String pluralPast) {
 		
@@ -30,5 +30,7 @@ public abstract class Verb extends Word {
 	}
 	public abstract boolean isTransitive();
 	public abstract boolean isUsedWithPrepPhrase();
+	public abstract boolean isLinking();
+
 
 }
