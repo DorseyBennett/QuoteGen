@@ -261,7 +261,8 @@ public class SentenceGenerator {
 		firstChar = firstChar.toUpperCase();
 		restOfStr = restOfStr.toLowerCase();
 
-		return firstChar + restOfStr + ".";
+		String returnVal =  firstChar + restOfStr + ".";
+		return returnVal + HashtagFunctions.generateRelevantHashtag(returnVal);
 	}
 	/**
 	 * Appends an independent clause to end of given sentence
