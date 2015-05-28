@@ -1,14 +1,16 @@
 package QuoteGen.words.verbs;
 
-
-
-public class IntransitiveVerb extends Verb{
-	public IntransitiveVerb(String present, String past) {
+public class LinkingVerb extends Verb {
+	public LinkingVerb(String present, String past) {
 		super(present, past);
 	}
-	public IntransitiveVerb(String singularPresent, String pluralPresent, 
+	public LinkingVerb(String singularPresent, String pluralPresent, 
 			String singularPast, String pluralPast) {
 		super(singularPresent, pluralPresent, singularPast, pluralPast);
+	}
+	public LinkingVerb(String singularPresent, String pluralPresent, 
+			String singularPast, String pluralPast, String inf) {
+		super(singularPresent, pluralPresent, singularPast, pluralPast, inf);
 	}
 	@Override
 	public boolean isTransitive() {
@@ -19,7 +21,7 @@ public class IntransitiveVerb extends Verb{
 		return false;
 	}
 	public boolean isLinking() {
-		return false;
+		return true;
 	}
 	public boolean isHelping() {
 		return false;

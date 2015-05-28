@@ -18,4 +18,10 @@ public class PrepositionalVerb extends Verb{
 	public boolean isUsedWithPrepPhrase() {
 		return true;
 	}
+	public boolean isLinking() {
+		return false;
+	}
+	public boolean isHelping() {
+		return false;
+	}
 }
