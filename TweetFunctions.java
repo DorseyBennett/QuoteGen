@@ -1,4 +1,4 @@
-package QuoteGen.twitter;
+package QuoteGen;
 
 import java.util.HashMap;
 
@@ -6,7 +6,7 @@ import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.*;
 
-@SuppressWarnings("deprecation");
+@SuppressWarnings("deprecation")
 
 public class TweetFunctions {
 	
@@ -221,5 +221,23 @@ public class TweetFunctions {
 		}
 	}
 	
+	public static String getAllTweets()
+	{
+		setupTweets();
+		String allTweets = "";
+		for (int i = 1; i <= numTweets; i++)
+		{
+			allTweets += getTweet(i);
+			allTweets += (favoriteCount(i) + retweetCount(i));
+		}
+		
+		return allTweets;
+			
+	}
+	
+	
+	public static void main(String[] args) {
+		System.out.println(getAllTweets());
+	}
 }
 
