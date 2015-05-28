@@ -5,20 +5,8 @@
 package QuoteGen;
 import java.util.ArrayList;
 
-import QuoteGen.words.Adjective;
-import QuoteGen.words.Adverb;
-import QuoteGen.words.Article;
-import QuoteGen.words.CoordinatingConjunction;
-import QuoteGen.words.Interjection;
-import QuoteGen.words.Noun;
-import QuoteGen.words.Preposition;
-import QuoteGen.words.SubordinateConjuction;
-import QuoteGen.words.Word;
-import QuoteGen.words.verbs.IntransitiveVerb;
-import QuoteGen.words.verbs.LinkingVerb;
-import QuoteGen.words.verbs.PrepositionalVerb;
-import QuoteGen.words.verbs.TransitiveVerb;
-import QuoteGen.words.verbs.Verb;
+import QuoteGen.words.*;
+import QuoteGen.words.verbs.*;
 /** Class used to generate sentences, only used statically */
 public class SentenceGenerator {
 	/** flags to denote whether article and whether plural
@@ -38,30 +26,26 @@ public class SentenceGenerator {
 		String[][] nouns = {
 				{"person", "people"},
 				{"soul", "souls"}, {"heart", "hearts"},
-				{"friend", "friends"}, {"brother", "brothers"},
-				{"sister", "sisters"}, {"hope", "hope"},
+				{"friend", "friends"}, {"hope", "hope"},
 				{"love", "love"}, {"fear", "fears"}, {"friend", "friends"}, 
-				{"success", "successes"}, 
+				{"success", "successes"},
 				{"perfection", "perfection"}, {"excellence", "excellence"}, 
 				{"world", "worlds"}, {"work", "work"}, {"mind", "minds"}, 
 				{"light", "lights"}, {"opportunity", "opportunities"},
-				{"destiny", "destinies"},
-				{"darkness", "darknesses"},
+				{"destiny", "destinies"}, {"darkness", "darknesses"},
 				{"envy", "envy"}, {"pride", "pride"}
 
 		};//nx2
 		int[] flags = { 
 				pluralArticle | singularArticle | pluralNoArticle,
 				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
-				pluralArticle | singularArticle | pluralNoArticle, pluralArticle | singularArticle | pluralNoArticle,
-				pluralArticle | singularArticle | pluralNoArticle, singularNoArticle,
+				pluralArticle | singularArticle | pluralNoArticle,  singularNoArticle,
 				singularNoArticle, pluralNoArticle | singularNoArticle, pluralNoArticle | singularArticle | pluralArticle,
 				singularNoArticle | pluralArticle | singularNoArticle, 
 				singularNoArticle, singularNoArticle,
 				singularArticle | pluralNoArticle, singularNoArticle, singularArticle | pluralNoArticle, 
 				singularArticle | pluralNoArticle, singularNoArticle | pluralNoArticle,
-				singularNoArticle | singularArticle,
-				singularNoArticle, 
+				singularNoArticle | singularArticle, singularNoArticle, 
 				singularNoArticle, singularNoArticle,
 
 		};
@@ -88,10 +72,11 @@ public class SentenceGenerator {
 				{"Leave", "leaves", "left", "left"},
 				{"Have", "has", "had", "had"},
 				{"build", "builds", "built", "built"},
-				{"teach", "teaches", "taught", "taught"}
+				{"teach", "teaches", "taught", "taught"},
+				{"see", "sees", "saw", "saw"},
 		};//nx4
 
-		String[][] intransVerbs = {
+		String[][] intransVerbs = { 
 				{"focus", "focuses", "focused", "focused"},
 				{"live", "lives", "lived", "lived"},
 				{"talk", "talks", "talked", "talked"},
@@ -100,8 +85,7 @@ public class SentenceGenerator {
 				{"hate", "hates", "hated", "hated"}, 
 				{"learn", "learns", "learned", "learned"},
 		};//nx4
-		String[][] linkingVerbs = {
-				{"are", "is", "were", "was"},
+		String[][] linkingVerbs = {//to be handled separately
 				{"seem", "seems", "seemed", "seemed"},
 				{"remain", "remains", "remained", "remained"},
 				{"become", "becomes", "became", "became"},
@@ -112,7 +96,12 @@ public class SentenceGenerator {
 				{"run", "runs", "ran", "ran"},
 				{"walk", "walks", "walked", "walked"}
 		};//nx4
-
+		String[][] helpVerbs = {
+				{"want", "wants", "wanted", "wanted"},
+				{"need", "needs", "needed", "needed"},
+				{"expect", "expects", "expected", "expected"}, 
+				
+		};//nx4
 		String[][] articles = {
 				{"the", "the"}, {"a", "some"},
 				{"the", "the"}, {"a", "some"},
@@ -138,9 +127,11 @@ public class SentenceGenerator {
 		addWordsOfType(intransVerbs, flags, Word.verb, Verb.intransitive);
 		addWordsOfType(linkingVerbs, flags, Word.verb, Verb.linking);
 		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
+		addWordsOfType(helpVerbs, flags, Word.verb, Verb.helping);
 		addWordsOfType(subordinateConjuctions, flags, Word.subordinateConjuction, 0);
 		addWordsOfType(coordinatingConjuctions, flags, Word.coordinatingConjunctions, 0);
-
+		listOfWords.add(new LinkingVerb("is", "are", "was", "were", "to be"));
+		
 	}
 	/**
 	 * Adds given strings to listOfWords
@@ -192,6 +183,9 @@ public class SentenceGenerator {
 				case Verb.linking:
 					listOfWords.add(new LinkingVerb(e[1], e[0], e[3], e[2]));
 					break;
+				case Verb.helping:
+					listOfWords.add(new HelpingVerb(e[1], e[0], e[3], e[2]));
+					break;
 				default:
 					break;
 				}
@@ -228,6 +222,7 @@ public class SentenceGenerator {
 				negative = false;
 
 		int index = 0;
+		boolean infinitive = false;
 		for (Word e : sentence) {
 			if (e != null && e.getWord(false).equals("but")) negative=!negative;
 			if (e == null) {
@@ -238,7 +233,11 @@ public class SentenceGenerator {
 				res += (nextC == 'a' || nextC == 'e' || nextC == 'i' || nextC == 'o' || nextC == 'u') ?
 						"an " : "a ";
 			} else if (e.getPartOfSpeech() == Word.verb) {//verbs need special treatment
-				if (negative) {
+				Verb v = (Verb) e;
+				if (infinitive) {
+					res += v.getInfinitive() + " ";
+					infinitive = false;
+				} else if (negative) {
 					if (e.getWord(true).equals("are")) {
 						res += present ? (plural.get(index) ? "are not " : "is not ") : (plural.get(index) ? "were not " : "was not ");
 					} else {
@@ -246,8 +245,10 @@ public class SentenceGenerator {
 					res += e.getWord(true) + " ";
 					}
 				} else {
-					Verb v = (Verb) e;
 					res += v.getWord(plural.get(index), present) + " ";
+				}
+				if (v.isHelping()) {
+					infinitive = true;
 				}
 			} else {
 				res += e.getWord(plural.get(index)) + " ";
@@ -292,6 +293,11 @@ public class SentenceGenerator {
 		
 		
 		Verb predicate = (Verb) getWordOfType(Word.verb, subj);
+		if (predicate.isHelping()) sentence.add(predicate);
+		while (predicate.isHelping()) {
+			predicate = (Verb) getWordOfType(Word.verb, subj);
+		}
+		
 		//get verb related to subj.
 
 
@@ -325,9 +331,7 @@ public class SentenceGenerator {
 			plur = appendPrepositionalPhrase(sentence);
 			finLength = sentence.size();
 		} else if (predicate.isLinking()) {
-			if (Math.random()>0.2) {//adjective
-				sentence.add(getWordOfType(Word.adjective, subj));
-			}
+			sentence.add(getWordOfType(Word.adjective, subj));
 			finLength = sentence.size();
 
 		}
@@ -395,7 +399,7 @@ public class SentenceGenerator {
 	 */
 	private static boolean appendDescriptiveNoun (ArrayList<Word> sentence) {
 		double random = Math.random();
-		int numAdjs = random < 0.2 ? 0 : (random < 0.9 ? 1 : 2);
+		int numAdjs = random < 0.3 ? 0 : (random < 0.95 ? 1 : 2);
 
 		Word lastWord = null;
 		if (sentence.size()>0) {//if sentence is not empty, get noun related to last word

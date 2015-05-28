@@ -2,7 +2,7 @@ package QuoteGen;
 
 public class Test {
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		int time;
 		while(true)
 		{
@@ -23,7 +23,7 @@ public class Test {
 			
 		}
 	}
-	public static void main2(String[] args) {
+	public static void main(String[] args) {
 		System.out.println(SentenceGenerator.generateSentence());
 	}
 }

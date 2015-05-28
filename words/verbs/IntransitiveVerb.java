@@ -21,4 +21,7 @@ public class IntransitiveVerb extends Verb{
 	public boolean isLinking() {
 		return false;
 	}
+	public boolean isHelping() {
+		return false;
+	}
 }

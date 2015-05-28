@@ -21,4 +21,7 @@ public class PrepositionalVerb extends Verb{
 	public boolean isLinking() {
 		return false;
 	}
+	public boolean isHelping() {
+		return false;
+	}
 }
