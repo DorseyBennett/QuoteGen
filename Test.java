@@ -13,7 +13,7 @@ public class Test {
 				{
 					 quote = SentenceGenerator.generateSentence();
 				}
-				tweetFunctions.tweet(quote);
+				TweetFunctions.tweet(quote);
 				time = (int)(Math.random()*900000)+900000;
 				Thread.sleep(time);
 			} catch (InterruptedException e) {

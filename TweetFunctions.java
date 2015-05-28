@@ -1,4 +1,4 @@
-package QuoteGen.twitter;
+package QuoteGen;
 
 import java.util.HashMap;
 
@@ -6,7 +6,7 @@ import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.*;
 
-@SuppressWarnings("deprecation");
+//@SuppressWarnings("deprecation");
 
 public class TweetFunctions {
 	
