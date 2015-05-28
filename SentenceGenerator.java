@@ -35,7 +35,7 @@ public class SentenceGenerator {
 				{"soul", "souls"}, {"heart", "hearts"}, 
 				{"friend", "friends"}, {"brother", "brothers"}, 
 				{"sister", "sisters"}, {"hope", "hope"},
-				{"love", "love"}, {"h8er", "h8ers"},
+				{"love", "love"},
 				
 		};//nx2
 		int[] flags = { pluralArticle | singularArticle | pluralNoArticle, 
