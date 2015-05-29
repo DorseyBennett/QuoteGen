@@ -435,7 +435,7 @@ public class SentenceGenerator {
 	 * @param related word that return value should be similar to (null gives random word)
 	 * @return word of specified type similar to specified word
 	 */
-	private static Word getWordOfType (int type, Word related) {
+	private static Word getWordOfType (int type) {
 		//will be updated to use Markov or related
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 		for (int i = 0; i < listOfWords.size(); i++)
@@ -443,5 +443,11 @@ public class SentenceGenerator {
 				temp.add(i);
 		int index = temp.get((int)(Math.random() * temp.size()));
 		return listOfWords.remove(index);
+	}
+	private static Word getWordOfType (int type, Word related) {
+		if (related == null) {
+			return getWordOfType(type);
+		}
+		return getWordOfType(type);//TODO: implement markov
 	}
 }
