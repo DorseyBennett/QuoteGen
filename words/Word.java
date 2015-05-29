@@ -5,7 +5,7 @@ public abstract class Word {
         adjective = 2,                  adverb = 3,
         preposition = 4,                subordinateConjuction = 5,
         interjection = 6, 				article = 7, 
-        coordinatingConjunctions = 8;
+        coordinatingConjunction = 8,    adjAdverb = 9;
 	/*I know that article is not a separate part of speech (it is an adjective) 
 		but since they are used differently, they should be in a different class
 		*/

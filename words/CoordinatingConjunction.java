@@ -6,7 +6,7 @@ public class CoordinatingConjunction extends Word {
 		this.conj = conj;
 	}
 	public int getPartOfSpeech() {
-		return Word.coordinatingConjunctions;
+		return Word.coordinatingConjunction;
 	}
 	public String getWord(boolean plural) {
 		return conj;

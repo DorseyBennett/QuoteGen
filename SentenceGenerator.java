@@ -22,6 +22,7 @@ public class SentenceGenerator {
 	 * Populates listOfWords with statically initialized words
 	 */
 	//TODO: helping + linking verbs, 
+	//TODO: add more words, implement ben's markov
 	public static void setupListOfWords() {
 		String[][] nouns = {
 				{"person", "people"},
@@ -54,7 +55,10 @@ public class SentenceGenerator {
 				{"Blessed"}, {"Important"}, {"sad"},
 				{"lovely"}, {"Lonely"}, {"foolish"}, {"dark"}
 		};
-		String[][] adverbs = {{"Never"}, {"Always"}, {"Sometimes"}, {"Often"}, {"Usually"}};
+		String[][] adverbs = {{"Never"}, {"Always"}, {"Sometimes"}, 
+				{"Often"}, {"Usually"}, {"Suddenly"} };
+		
+		String[][] adjAdverbs = { {"Least"}, {"Most"}, {"Very"} };
 
 		String[][] prepositions = {{"In"}, {"On"}, {"Outside of"}, {"Inside of"},
 				{"Beside"}, {"Towards"}, {"Away from"}, {"Without"}, {"With"}, {"Above"},
@@ -100,6 +104,8 @@ public class SentenceGenerator {
 				{"want", "wants", "wanted", "wanted"},
 				{"need", "needs", "needed", "needed"},
 				{"expect", "expects", "expected", "expected"}, 
+				{"wish", "wishes", "wished", "wished"},
+				
 				
 		};//nx4
 		String[][] articles = {
@@ -121,6 +127,7 @@ public class SentenceGenerator {
 		addWordsOfType(nouns, flags, Word.noun, 0);
 		addWordsOfType(adjectives, flags, Word.adjective, 0);
 		addWordsOfType(adverbs, flags, Word.adverb, 0);
+		addWordsOfType(adjAdverbs, flags, Word.adjAdverb, 0);
 		addWordsOfType(prepositions, flags, Word.preposition, 0);
 		addWordsOfType(transVerbs, flags, Word.verb, Verb.transitive);
 		addWordsOfType(articles, flags, Word.article, 0);
@@ -129,7 +136,7 @@ public class SentenceGenerator {
 		addWordsOfType(prepVerbs, flags, Word.verb, Verb.prepositional);
 		addWordsOfType(helpVerbs, flags, Word.verb, Verb.helping);
 		addWordsOfType(subordinateConjuctions, flags, Word.subordinateConjuction, 0);
-		addWordsOfType(coordinatingConjuctions, flags, Word.coordinatingConjunctions, 0);
+		addWordsOfType(coordinatingConjuctions, flags, Word.coordinatingConjunction, 0);
 		listOfWords.add(new LinkingVerb("is", "are", "was", "were", "to be"));
 		
 	}
@@ -166,7 +173,7 @@ public class SentenceGenerator {
 			case Word.subordinateConjuction: 
 				listOfWords.add(new SubordinateConjuction(e[0]));
 				break;
-			case Word.coordinatingConjunctions: 
+			case Word.coordinatingConjunction: 
 				listOfWords.add(new CoordinatingConjunction(e[0]));
 				break;
 			case Word.verb:
@@ -209,7 +216,7 @@ public class SentenceGenerator {
 			plural.add(true);
 			sentence.add(null);
 			plural.add(true);
-			sentence.add(getWordOfType(Word.coordinatingConjunctions, null));
+			sentence.add(getWordOfType(Word.coordinatingConjunction, null));
 			appendIndependentClause(sentence, plural, false);
 		} else {
 			appendIndependentClause(sentence, plural, true);
@@ -332,6 +339,8 @@ public class SentenceGenerator {
 			plur = appendPrepositionalPhrase(sentence);
 			finLength = sentence.size();
 		} else if (predicate.isLinking()) {
+			if (Math.random() < 0.3)
+				sentence.add(getWordOfType(Word.adjAdverb, subj));
 			sentence.add(getWordOfType(Word.adjective, subj));
 			finLength = sentence.size();
 
@@ -419,6 +428,8 @@ public class SentenceGenerator {
 			sentence.add(getWordOfType(Word.article, adj[0]));//gets article related to adjective (dont say "a best")
 		}
 		for (int i = 0; i<numAdjs; i++) {
+			if(Math.random() < 0.3)
+				sentence.add(getWordOfType(Word.adjAdverb, adj[0]));
 			sentence.add(adj[i]); 
 			if (i < numAdjs - 1) {//add comma
 				sentence.add(null);
