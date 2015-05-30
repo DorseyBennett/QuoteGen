@@ -448,7 +448,7 @@ public class SentenceGenerator {
 			sentence.add(getWordOfType(Word.article, adj[0]));//gets article related to adjective (dont say "a best")
 		}
 		for (int i = 0; i<numAdjs; i++) {
-			if(Math.random() < 0.3)
+			if(Math.random() < 0.3 && i == 0)
 				sentence.add(getWordOfType(Word.adjAdverb, null));
 			sentence.add(adj[i]); 
 			if (i < numAdjs - 1) {//add comma
