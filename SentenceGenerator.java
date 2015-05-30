@@ -34,7 +34,8 @@ public class SentenceGenerator {
 				{"world", "worlds"}, {"work", "work"}, {"mind", "minds"}, 
 				{"light", "lights"}, {"opportunity", "opportunities"},
 				{"destiny", "destinies"}, {"darkness", "darknesses"},
-				{"envy", "envy"}, {"pride", "pride"}
+				{"envy", "envy"}, {"pride", "pride"},
+				{"sadness", "sadnesses"}
 
 		};//nx2
 		int[] flags = { 
@@ -47,7 +48,7 @@ public class SentenceGenerator {
 				singularArticle | pluralNoArticle, singularNoArticle, singularArticle | pluralNoArticle, 
 				singularArticle | pluralNoArticle, singularNoArticle | pluralNoArticle,
 				singularNoArticle | singularArticle, singularNoArticle, 
-				singularNoArticle, singularNoArticle,
+				singularNoArticle, singularNoArticle, singularNoArticle,
 
 		};
 		String[][] adjectives = {{"impossible"}, {"Beautiful"}, {"Happy"},
@@ -56,9 +57,14 @@ public class SentenceGenerator {
 				{"lovely"}, {"Lonely"}, {"foolish"}, {"dark"}
 		};
 		String[][] adverbs = {{"Never"}, {"Always"}, {"Sometimes"}, 
-				{"Often"}, {"Usually"}, {"Suddenly"} };
+				{"Often"}, {"Usually"}, {"Suddenly"}, 
+				{"Completely"} };
 		
-		String[][] adjAdverbs = { {"Least"}, {"Most"}, {"Very"} };
+		String[][] adjAdverbs = { {"Incredibly"}, {"Fantastically"}, {"Especially"}, 
+				{"Rather"}, {"Eternally"}, {"Uniquely"}, 
+				{"Infinitely"}, {"Wonderfully"}, {"Perfectly"},
+				{"Imperfectly"}, {"Wonderfully"}, {"Purely"},
+				{"Altogether"} };
 
 		String[][] prepositions = {{"In"}, {"On"}, {"Outside of"}, {"Inside of"},
 				{"Beside"}, {"Towards"}, {"Away from"}, {"Without"}, {"With"}, {"Above"},
@@ -89,16 +95,16 @@ public class SentenceGenerator {
 				{"hate", "hates", "hated", "hated"}, 
 				{"learn", "learns", "learned", "learned"},
 		};//nx4
-		String[][] linkingVerbs = {//to be handled separately
+		String[][] linkingVerbs = {//to be handled separately //coolcool
 				{"seem", "seems", "seemed", "seemed"},
 				{"remain", "remains", "remained", "remained"},
 				{"become", "becomes", "became", "became"},
 		};//nx4
 		String[][] prepVerbs = {
 				{"go", "goes", "went", "went"},
-				{"fly", "flies","flew", "flew"},
 				{"run", "runs", "ran", "ran"},
-				{"walk", "walks", "walked", "walked"}
+				{"walk", "walks", "walked", "walked"},
+				{"Look", "Looks", "looked", "looked"},
 		};//nx4
 		String[][] helpVerbs = {
 				{"want", "wants", "wanted", "wanted"},
@@ -121,7 +127,8 @@ public class SentenceGenerator {
 				{"while"}
 		};
 		String[][] coordinatingConjuctions = {
-				{"and"}, {"but"}, 
+				{"and"}, {"but"}, {"for"},
+				{"yet"}, {"so"}
 		};
 		listOfWords = new ArrayList<Word>();
 		addWordsOfType(nouns, flags, Word.noun, 0);
@@ -175,6 +182,9 @@ public class SentenceGenerator {
 				break;
 			case Word.coordinatingConjunction: 
 				listOfWords.add(new CoordinatingConjunction(e[0]));
+				break;
+			case Word.adjAdverb:
+				listOfWords.add(new AdjAdverb(e[0]));
 				break;
 			case Word.verb:
 				switch (verbType) {
@@ -300,11 +310,22 @@ public class SentenceGenerator {
 		if (nounClauseInSubject) initLength = plural.size();//if noun clause, only make things after noun clause plural
 		
 		
+			
+		
 		Verb predicate = (Verb) getWordOfType(Word.verb, subj);
-		if (predicate.isHelping()) sentence.add(predicate);
+		
+		if(Math.random() < 0.9 && !predicate.isLinking())
+			sentence.add(getWordOfType(Word.adverb, null));
+		
+		if (predicate.isHelping())  {
+			sentence.add(predicate);
+		}
 		while (predicate.isHelping()) {
 			predicate = (Verb) getWordOfType(Word.verb, subj);
 		}
+		
+		if(Math.random() < 0.9 && predicate.isLinking())
+			sentence.add(getWordOfType(Word.adverb, null));
 		
 		//get verb related to subj.
 
@@ -315,7 +336,6 @@ public class SentenceGenerator {
 				finLength = sentence.size();
 				appendAdverbialClause(sentence, plural);
 			} else {
-				sentence.add(getWordOfType(Word.adverb, predicate));
 				sentence.add(predicate);
 				finLength = sentence.size();
 			}
@@ -340,7 +360,7 @@ public class SentenceGenerator {
 			finLength = sentence.size();
 		} else if (predicate.isLinking()) {
 			if (Math.random() < 0.3)
-				sentence.add(getWordOfType(Word.adjAdverb, subj));
+				sentence.add(getWordOfType(Word.adjAdverb, null));
 			sentence.add(getWordOfType(Word.adjective, subj));
 			finLength = sentence.size();
 
@@ -429,7 +449,7 @@ public class SentenceGenerator {
 		}
 		for (int i = 0; i<numAdjs; i++) {
 			if(Math.random() < 0.3)
-				sentence.add(getWordOfType(Word.adjAdverb, adj[0]));
+				sentence.add(getWordOfType(Word.adjAdverb, null));
 			sentence.add(adj[i]); 
 			if (i < numAdjs - 1) {//add comma
 				sentence.add(null);
